@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List App</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
         .task {
             display: inline-block;
             border: 1px solid #ccc;
             padding: 10px;
             margin: 5px;
             background-color: #f8f8f8;
+            border-radius: 4px;
         }
 
         .completed {
@@ -56,6 +65,37 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        #task-form, #branch-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -77,8 +117,8 @@
             <p>Do you want to create a subtask (branch) or end this task?</p>
             <form id="branch-form">
                 <input type="text" id="subtask-input" placeholder="Enter a subtask">
-                <button type="submit">Create Subtask</button>
-            </form>
+                <button type="submit">Add Subtask</button>
+                        </form>
             <button id="end-task">End Task</button>
         </div>
     </div>
@@ -99,58 +139,56 @@
         taskForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const taskText = taskInput.value.trim();
-                    if (taskText.length > 0) {
-            addTask(taskText, taskList);
-            taskInput.value = '';
-        }
-    });
-
-    branchForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const subtaskText = subtaskInput.value.trim();
-        if (subtaskText.length > 0) {
-            addTask(subtaskText, activeTask.subtasksContainer);
-            closeModal.click();
-            subtaskInput.value = '';
-        }
-    });
-
-    closeModal.addEventListener('click', () => {
-        branchModal.style.display = 'none';
-    });
-
-    endTaskBtn.addEventListener('click', () => {
-        closeModal.click();
-    });
-
-    function addTask(taskText, container) {
-        const task = document.createElement('div');
-        task.classList.add('task');
-
-        const taskTitle = document.createElement('p');
-        taskTitle.textContent = taskText;
-        task.appendChild(taskTitle);
-
-        const completeBtn = document.createElement('button');
-        completeBtn.textContent = 'Complete';
-        completeBtn.addEventListener('click', () => {
-            taskTitle.classList.toggle('completed');
-            if (taskTitle.classList.contains('completed')) {
-                branchModal.style.display = 'block';
-                activeTask = task;
+            if (taskText.length > 0) {
+                addTask(taskText, taskList);
+                taskInput.value = '';
             }
         });
 
-        const subtasksContainer = document.createElement('div');
-        subtasksContainer.classList.add('subtasks');
-        task.subtasksContainer = subtasksContainer;
+        branchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const subtaskText = subtaskInput.value.trim();
+            if (subtaskText.length > 0) {
+                addTask(subtaskText, activeTask.subtasksContainer);
+                subtaskInput.value = '';
+            }
+        });
 
-        task.appendChild(completeBtn);
-        task.appendChild(subtasksContainer);
-        container.appendChild(task);
-    }
+        closeModal.addEventListener('click', () => {
+            branchModal.style.display = 'none';
+        });
+
+        endTaskBtn.addEventListener('click', () => {
+            closeModal.click();
+        });
+
+        function addTask(taskText, container) {
+            const task = document.createElement('div');
+            task.classList.add('task');
+
+            const taskTitle = document.createElement('p');
+            taskTitle.textContent = taskText;
+            task.appendChild(taskTitle);
+
+            const completeBtn = document.createElement('button');
+            completeBtn.textContent = 'Complete';
+            completeBtn.addEventListener('click', () => {
+                taskTitle.classList.toggle('completed');
+                if (taskTitle.classList.contains('completed')) {
+                    branchModal.style.display = 'block';
+                    activeTask = task;
+                }
+            });
+
+            const subtasksContainer = document.createElement('div');
+            subtasksContainer.classList.add('subtasks');
+            task.subtasksContainer = subtasksContainer;
+
+            task.appendChild(completeBtn);
+            task.appendChild(subtasksContainer);
+            container.appendChild(task);
+        }
     </script>
 </body>
 </html>
-
 
