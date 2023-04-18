@@ -180,15 +180,22 @@
                 }
             });
 
+            const addSubtaskBtn = document.createElement('button');
+            addSubtaskBtn.textContent = 'Add Subtask';
+            addSubtaskBtn.addEventListener('click', () => {
+                branchModal.style.display = 'block';
+                activeTask = task;
+            });
+
             const subtasksContainer = document.createElement('div');
             subtasksContainer.classList.add('subtasks');
             task.subtasksContainer = subtasksContainer;
 
             task.appendChild(completeBtn);
+            task.appendChild(addSubtaskBtn);
             task.appendChild(subtasksContainer);
             container.appendChild(task);
         }
     </script>
 </body>
 </html>
-
