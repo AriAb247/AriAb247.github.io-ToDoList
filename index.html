@@ -225,11 +225,15 @@
             radio.name = name;
             radio.checked = checked;
             radio.addEventListener('change', () => {
+                task.classList.remove('not-started', 'in-progress', 'completed');
                 if (labelText === 'Not Started') {
+                    task.classList.add('not-started');
                     taskTitle.classList.remove('completed');
                 } else if (labelText === 'In Progress') {
+                    task.classList.add('in-progress');
                     taskTitle.classList.remove('completed');
                 } else if (labelText === 'Completed') {
+                    task.classList.add('completed');
                     taskTitle.classList.add('completed');
                     branchModal.style.display = 'block';
                     activeTask = task;
