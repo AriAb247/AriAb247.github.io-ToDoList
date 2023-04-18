@@ -180,7 +180,7 @@
             closeModal.click();
         });
 
-         function addTask(taskText, container) {
+        function addTask(taskText, container) {
             const task = document.createElement('div');
             task.classList.add('task', 'not-started');
 
@@ -188,35 +188,14 @@
             taskTitle.textContent = taskText;
             task.appendChild(taskTitle);
 
-            const statusBtn = document.createElement('button');
-            statusBtn.textContent = 'Not Started';
-            statusBtn.addEventListener('click', () => {
-                if (task.classList.contains('not-started')) {
-                    task.classList.remove('not-started');
-                    task.classList.add('in-progress');
-                    statusBtn.textContent = 'In Progress';
-                } else if (task.classList.contains('in-progress')) {
-                    task.classList.remove('in-progress');
-                    task.classList.add('completed');
-                    statusBtn.textContent = 'Completed';
-                } else if (task.classList.contains('completed')) {
-                    task.classList.remove('completed');
-                    task.classList.add('not-started');
-                    statusBtn.textContent = 'Not Started';
-                }
-            });
+            const statusGroup = document.createElement('div');
+            const notStartedRadio = createRadioButton('status', 'Not Started', true, task, taskTitle);
+            const inProgressRadio = createRadioButton('status', 'In Progress', false, task, taskTitle);
+            const completedRadio = createRadioButton('status', 'Completed', false, task, taskTitle);
 
-            const completeBtn = document.createElement('button');
-            completeBtn.textContent = 'Complete';
-            completeBtn.addEventListener('click', () => {
-                taskTitle.classList.toggle('completed');
-                if (taskTitle.classList.contains('completed')) {
-                    branchModal.style.display = 'block';
-                    activeTask = task;
-                    addingTopLevel = false;
-                    modalTitle.textContent = 'Task completed!';
-                }
-            });
+            statusGroup.appendChild(notStartedRadio);
+            statusGroup.appendChild(inProgressRadio);
+            statusGroup.appendChild(completedRadio);
 
             const addSubtaskBtn = document.createElement('button');
             addSubtaskBtn.textContent = 'Add Subtask';
@@ -231,11 +210,36 @@
             subtasksContainer.classList.add('subtasks');
             task.subtasksContainer = subtasksContainer;
 
-            task.appendChild(statusBtn);
-            task.appendChild(completeBtn);
+            task.appendChild(statusGroup);
             task.appendChild(addSubtaskBtn);
             task.appendChild(subtasksContainer);
             container.appendChild(task);
+        }
+
+        function createRadioButton(name, labelText, checked, task, taskTitle) {
+            const label = document.createElement('label');
+            label.textContent = labelText;
+
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = name;
+            radio.checked = checked;
+            radio.addEventListener('change', () => {
+                if (labelText === 'Not Started') {
+                    taskTitle.classList.remove('completed');
+                } else if (labelText === 'In Progress') {
+                    taskTitle.classList.remove('completed');
+                } else if (labelText === 'Completed') {
+                    taskTitle.classList.add('completed');
+                    branchModal.style.display = 'block';
+                    activeTask = task;
+                    addingTopLevel = false;
+                    modalTitle.textContent = 'Add a subtask';
+                }
+            });
+
+            label.insertBefore(radio, label.firstChild);
+            return label;
         }
     </script>
 </body>
