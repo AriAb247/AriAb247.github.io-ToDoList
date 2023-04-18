@@ -283,7 +283,7 @@
             container.appendChild(task);
         }
 
-        function createRadioButton(name, labelText, checked, task, taskTitle) {
+         function createRadioButton(name, labelText, checked, task, taskTitle) {
             const label = document.createElement('label');
             label.textContent = labelText;
 
@@ -309,9 +309,13 @@
                 }
             });
 
-            label.style.textDecoration = 'none'; // Add this line
+            label.style.textDecoration = 'none';
             label.insertBefore(radio, label.firstChild);
             return label;
+        }
+        
+        function updateTaskStyle(taskTitle, task) {
+            taskTitle.classList.toggle('completed', task.classList.contains('completed'));
         }
     </script>
 </body>
