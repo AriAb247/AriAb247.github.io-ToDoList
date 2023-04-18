@@ -135,6 +135,7 @@
         const endTaskBtn = document.getElementById('end-task');
 
         let activeTask;
+        let addingTopLevel = true;
 
         taskForm.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -149,13 +150,18 @@
             event.preventDefault();
             const subtaskText = subtaskInput.value.trim();
             if (subtaskText.length > 0) {
-                addTask(subtaskText, activeTask.subtasksContainer);
+                if (addingTopLevel) {
+                    addTask(subtaskText, taskList);
+                } else {
+                    addTask(subtaskText, activeTask.subtasksContainer);
+                }
                 subtaskInput.value = '';
             }
         });
 
         closeModal.addEventListener('click', () => {
             branchModal.style.display = 'none';
+            addingTopLevel = true;
         });
 
         endTaskBtn.addEventListener('click', () => {
@@ -177,6 +183,7 @@
                 if (taskTitle.classList.contains('completed')) {
                     branchModal.style.display = 'block';
                     activeTask = task;
+                    addingTopLevel = false;
                 }
             });
 
@@ -185,6 +192,7 @@
             addSubtaskBtn.addEventListener('click', () => {
                 branchModal.style.display = 'block';
                 activeTask = task;
+                addingTopLevel = false;
             });
 
             const subtasksContainer = document.createElement('div');
