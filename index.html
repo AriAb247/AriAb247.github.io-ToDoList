@@ -206,10 +206,25 @@
                 }
             });
 
+            const completeBtn = document.createElement('button');
+            completeBtn.textContent = 'Complete';
+            completeBtn.addEventListener('click', () => {
+                taskTitle.classList.toggle('completed');
+                if (taskTitle.classList.contains('completed')) {
+                    branchModal.style.display = 'block';
+                    activeTask = task;
+                    addingTopLevel = false;
+                    modalTitle.textContent = 'Task completed!';
+                }
+            });
+
             const addSubtaskBtn = document.createElement('button');
             addSubtaskBtn.textContent = 'Add Subtask';
             addSubtaskBtn.addEventListener('click', () => {
-                /* Unchanged event listener, omitted for brevity */
+                branchModal.style.display = 'block';
+                activeTask = task;
+                addingTopLevel = false;
+                modalTitle.textContent = 'Add a subtask';
             });
 
             const subtasksContainer = document.createElement('div');
@@ -217,6 +232,7 @@
             task.subtasksContainer = subtasksContainer;
 
             task.appendChild(statusBtn);
+            task.appendChild(completeBtn);
             task.appendChild(addSubtaskBtn);
             task.appendChild(subtasksContainer);
             container.appendChild(task);
