@@ -1,1 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List App</title>
+    <style>
+        .task {
+            display: inline-block;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            background-color: #f8f8f8;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            background-color: #e0e0e0;
+        }
+
+        .subtasks {
+            padding-left: 20px;
+            padding-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <form id="task-form">
+        <label for="task-input">New Task:</label>
+        <input type="text" id="task-input" placeholder="Enter a task">
+        <button type="submit">Add Task</button>
+    </form>
+    <div id="task-list">
+        <!-- Tasks will be displayed here -->
+    </div>
+
+    <!-- Modal for branching -->
+    <div id="branch-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Task completed!</h2>
+            <p>Do you want to create a subtask (branch) or end this task?</p>
+            <form id="branch-form">
+                <input type="text" id="subtask-input" placeholder="Enter a subtask">
+                <button type="submit">Create Subtask</button>
+            </form>
+            <button id="end-task">End Task</button>
+        </div>
+    </div>
+
+    <script>
+        const taskForm = document.getElementById('task-form');
+        const taskInput = document.getElementById('task-input');
+        const taskList = document.getElementById('task-list');
+
+        const branchModal = document.getElementById('branch-modal');
+        const branchForm = document.getElementById('branch-form');
+        const subtaskInput = document.getElementById('subtask-input');
+        const closeModal = document.querySelector('.close');
+        const endTaskBtn = document.getElementById('end-task');
+
+        let activeTask;
+
+        taskForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const taskText = taskInput.value.trim();
+                    if (taskText.length > 0) {
+            addTask(taskText, taskList);
+            taskInput.value = '';
+        }
+    });
+
+    branchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const subtaskText = subtaskInput.value.trim();
+        if (subtaskText.length > 0) {
+            addTask(subtaskText, activeTask.subtasksContainer);
+            closeModal.click();
+            subtaskInput.value = '';
+        }
+    });
+
+    closeModal.addEventListener('click', () => {
+        branchModal.style.display = 'none';
+    });
+
+    endTaskBtn.addEventListener('click', () => {
+        closeModal.click();
+    });
+
+    function addTask(taskText, container) {
+        const task = document.createElement('div');
+        task.classList.add('task');
+
+        const taskTitle = document.createElement('p');
+        taskTitle.textContent = taskText;
+        task.appendChild(taskTitle);
+
+        const completeBtn = document.createElement('button');
+        completeBtn.textContent = 'Complete';
+        completeBtn.addEventListener('click', () => {
+            taskTitle.classList.toggle('completed');
+            if (taskTitle.classList.contains('completed')) {
+                branchModal.style.display = 'block';
+                activeTask = task;
+            }
+        });
+
+        const subtasksContainer = document.createElement('div');
+        subtasksContainer.classList.add('subtasks');
+        task.subtasksContainer = subtasksContainer;
+
+        task.appendChild(completeBtn);
+        task.appendChild(subtasksContainer);
+        container.appendChild(task);
+    }
+    </script>
+</body>
+</html>
+
 
