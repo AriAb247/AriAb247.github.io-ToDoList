@@ -6,25 +6,66 @@
     <title>To-Do List App</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
         }
 
         h1 {
             text-align: center;
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #task-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #task-input {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 60%;
+        }
+
+        #task-form button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #task-form button:hover {
+            background-color: #283593;
         }
 
         .task {
             display: inline-block;
-            border: 1px solid #ccc;
-            padding: 10px;
+            padding: 15px;
             margin: 5px;
-            background-color: #f8f8f8;
-            border-radius: 4px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            width: 100%;
+        }
+
+        .task p {
+            font-size: 18px;
+            margin: 0;
+            margin-bottom: 10px;
         }
 
         .completed {
             text-decoration: line-through;
-            background-color: #e0e0e0;
         }
 
         .subtasks {
@@ -97,16 +138,36 @@
             border-radius: 4px;
         }
         
-        .not-started {
+       .not-started {
             background-color: #f8d7da;
         }
 
         .in-progress {
-            background-color: #fff3cd;
+            background-color: #ffeeba;
         }
 
         .completed {
-            background-color: #d4edda;
+            background-color: #c3e6cb;
+        }
+
+        label {
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #283593;
         }
     </style>
 </head>
