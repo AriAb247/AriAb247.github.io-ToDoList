@@ -52,6 +52,7 @@
         .task-title {
             width: 60%;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         #task-list {
@@ -67,6 +68,7 @@
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 3px rgba(0, 0, 0, 0.24);
             width: 80%;
+            box-sizing: border-box;
         }
 
         .task p {
@@ -119,7 +121,7 @@
         }
         
 
-        #task-form, #branch-form {
+                #task-form, #branch-form {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -231,7 +233,7 @@
             }
         });
 
-        branchForm.addEventListener('submit', (event) => {
+               branchForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const subtaskText = subtaskInput.value.trim();
             if (subtaskText.length > 0) {
@@ -256,9 +258,11 @@
         function addTask(taskText, container) {
             const task = document.createElement('div');
             task.classList.add('task', 'not-started');
+            task.style.minHeight = 'auto';
 
             const taskTitle = document.createElement('p');
             taskTitle.textContent = taskText;
+            taskTitle.classList.add('task-title');
             task.appendChild(taskTitle);
 
             const statusGroup = document.createElement('div');
@@ -289,7 +293,7 @@
             container.appendChild(task);
         }
 
-         function createRadioButton(name, labelText, checked, task, taskTitle) {
+        function createRadioButton(name, labelText, checked, task, taskTitle) {
             const label = document.createElement('label');
             label.textContent = labelText;
 
@@ -321,3 +325,4 @@
     </script>
 </body>
 </html>
+
