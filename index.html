@@ -312,6 +312,7 @@
         } else if (labelText === 'Completed') {
             task.classList.add('completed');
             taskTitle.classList.add('completed');
+            branchModal.style.display = 'block';
             activeTask = task;
             addingTopLevel = false;
             modalTitle.textContent = 'Add a subtask';
