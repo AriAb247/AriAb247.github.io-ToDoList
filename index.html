@@ -315,13 +315,8 @@
                 }
             });
 
-            label.style.textDecoration = 'none';
             label.insertBefore(radio, label.firstChild);
             return label;
-        }
-        
-        function updateTaskStyle(taskTitle, task) {
-            taskTitle.classList.toggle('completed', task.classList.contains('completed'));
         }
     </script>
 </body>
