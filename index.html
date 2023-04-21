@@ -306,68 +306,77 @@ function addTask(taskText, container, status = 'Not Started') {
     task.appendChild(subtasksContainer);
     container.appendChild(task);
 
-    updateLocalStorage();
-    return task;
+    updateLocalStorage();return task;
 }
 
 function createRadioButton(task, value, checked) {
     const label = document.createElement('label');
-label.textContent = value;
+    label.textContent = value;
 
-const radio = document.createElement('input');
-radio.type = 'radio';
-radio.name = value + task.textContent;
-radio.checked = checked;
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = value + task.textContent;
+    radio.checked = checked;
 
-radio.addEventListener('change', () => {
-    task.classList.remove('not-started', 'in-progress', 'completed');
-    task.classList.add(value.toLowerCase().replace(' ', '-'));
+    radio.addEventListener('change', () => {
+        task.classList.remove('not-started', 'in-progress', 'completed');
+        task.classList.add(value.toLowerCase().replace(' ', '-'));
 
-    if (value === 'Completed') {
-        branchModal.style.display = 'block';
-        activeTask = task;
-        addingTopLevel = false;
-        modalTitle.textContent = 'Task completed!';
-    }
-    updateLocalStorage();
-});
+        if (value === 'Completed') {
+            branchModal.style.display = 'block';
+            activeTask = task;
+            addingTopLevel = false;
+            modalTitle.textContent = 'Task completed!';
+        }
+        updateLocalStorage();
+    });
 
-label.insertBefore(radio, label.firstChild);
+    label.insertBefore(radio, label.firstChild);
 
-return label;
+    return label;
 }
 
 function loadSubtasks(task, subtasksData) {
-for (const subtaskData of subtasksData) {
-    const subtask = addTask(subtaskData.task, task.subtasksContainer, subtaskData.status);
-    if (subtaskData.subtasks) {
-        loadSubtasks(subtask, subtaskData.subtasks);
+    for (const subtaskData of subtasksData) {
+        const subtask = addTask(subtaskData.task, task.subtasksContainer, subtaskData.status);
+        if (subtaskData.subtasks) {
+            loadSubtasks(subtask, subtaskData.subtasks);
+        }
     }
-}
 }
 
 function updateLocalStorage() {
-const tasks = document.querySelectorAll('#task-list > .task');
-const taskDataList = Array.from(tasks).map(task => {
-    const taskTitle = task.querySelector('.task-title');
-    const subtasks = task.subtasksContainer.querySelectorAll('.task');
-    const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
+    const tasks = document.querySelectorAll('#task-list > .task');
+    const taskDataList = Array.from(tasks).map(task => {
+        const taskTitle = task.querySelector('.task-title');
+        const subtasks = task.subtasksContainer.querySelectorAll('.task');
+        const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
 
-    return {
-        task: taskTitle.textContent,
-        status: status,
-        subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => ({
-            task: subtask.querySelector('.task-title').textContent,
-            status: subtask.classList.contains('not-started') ? 'Not Started' : (subtask.classList.contains('in-progress') ? 'In Progress' : 'Completed'),
-            subtasks: null
-        })) : null
-    };
-});
+        return {
+            task: taskTitle.textContent,
+            status: status,
+            subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => {
+                const subtaskTitle = subtask.querySelector('.task-title');
+                const nestedSubtasks = subtask.subtasksContainer.querySelectorAll('.task');
+                const subtaskStatus = subtask.classList.contains('not-started') ? 'Not Started' : (subtask.classList.contains('in-progress') ? 'In Progress' : 'Completed');
 
-localStorage.setItem('tasks', JSON.stringify(taskDataList));
+                return {
+                    task: subtaskTitle.textContent,
+                    status: subtaskStatus,
+                    subtasks: nestedSubtasks.length > 0 ? Array.from(nestedSubtasks).map(nestedSubtask => ({
+                        task: nestedSubtask.querySelector('.task-title').textContent,
+                        status: nestedSubtask.classList.contains('not-started') ? 'Not Started' : (nestedSubtask.classList.contains('in-progress') ? 'In Progress' : 'Completed'),
+                        subtasks: null
+                    })) : null
+                }
+            }) : null
+        };
+    });
+
+    localStorage.setItem('tasks', JSON.stringify(taskDataList));
 }
 
 </script>
-    </body>
+</body>
 </html>
 
