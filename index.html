@@ -363,11 +363,6 @@ function getTaskData(task, isTopLevel) {
         subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => getTaskData(subtask, false)) : null
     };
 }
-
-
-    localStorage.setItem('tasks', JSON.stringify(taskDataList));
-}
-
 </script>
 </body>
 </html>
