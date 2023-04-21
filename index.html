@@ -261,9 +261,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTasks = JSON.parse(localStorage.getItem('tasks'));
     if (savedTasks) {
         for (const taskData of savedTasks) {
-            const task = addTask(taskData.task || taskData, taskList);
-            if (taskData.subtasks) {
-                loadSubtasks(task, taskData.subtasks);
+            if (!taskData.parentTask) {
+                const task = addTask(taskData.task || taskData, taskList);
+                if (taskData.subtasks) {
+                    loadSubtasks(task, taskData.subtasks);
+                }
             }
         }
     }
@@ -322,13 +324,16 @@ function updateLocalStorage() {
     const tasks = document.querySelectorAll('.task-title');
     const taskDataList = Array.from(tasks).map(task => {
         const subtasks = task.parentElement.subtasksContainer.querySelectorAll('.task-title');
+        const parentTask = task.parentElement.parentElement.closest('.task-title');
         return {
             task: task.textContent,
-            subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => subtask.textContent) : null
+            subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => subtask.textContent) : null,
+            parentTask: parentTask ? parentTask.textContent : null
         };
     });
     localStorage.setItem('tasks', JSON.stringify(taskDataList));
 }
+
 
 function createRadioButton(name, labelText, checked, task, taskTitle) {
     const label = document.createElement('label');
