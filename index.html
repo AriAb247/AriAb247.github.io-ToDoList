@@ -48,7 +48,7 @@
         #task-form button:hover {
             background-color: #283593;
         }
-        
+
         .task-title {
             width: 60%;
             word-wrap: break-word;
@@ -75,6 +75,10 @@
             font-size: 18px;
             margin: 0;
             margin-bottom: 10px;
+        }
+
+        .completed {
+            text-decoration: line-through;
         }
 
         .subtasks {
@@ -115,7 +119,6 @@
             text-decoration: none;
             cursor: pointer;
         }
-        
 
         #task-form, #branch-form {
             display: flex;
@@ -131,228 +134,150 @@
             padding: 8px 16px;
             text-align: center;
             text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 4px
 
-        button:hover {
+            button:hover {
             background-color: #45a049;
-        }
-
-        input[type="text"] {
-            padding: 6px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
-       .not-started {
-            background-color: #f8d7da;
-        }
-
-        .in-progress {
-            background-color: #ffeeba;
-        }
-
-        .completed {
-            background-color: #c3e6cb;
-        }
-
-        label {
-            font-size: 14px;
-            margin-right: 10px;
-        }
-
-        button {
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: #3f51b5;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        button:hover {
-            background-color: #283593;
         }
     </style>
 </head>
 <body>
-    <h1>To-Do List</h1>
+    <h1>To-Do List App</h1>
     <form id="task-form">
-        <label for="task-input">New Task:</label>
-        <input type="text" id="task-input" placeholder="Enter a task">
+        <input type="text" id="task-input" placeholder="Enter a new task...">
         <button type="submit">Add Task</button>
+        <button type="button" id="clear-tasks">Clear All Tasks</button>
     </form>
-    <div id="task-list">
-        <!-- Tasks will be displayed here -->
-    </div>
+    <div id="task-list"></div>
 
-    <!-- Modal for branching -->
-    <div id="branch-modal" class="modal">
+    <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Task completed!</h2>
-            <p>Do you want to create a subtask (branch) or end this task?</p>
             <form id="branch-form">
-                <input type="text" id="subtask-input" placeholder="Enter a subtask">
+                <input type="text" id="branch-input" placeholder="Enter a subtask...">
                 <button type="submit">Add Subtask</button>
             </form>
-            <button id="end-task">End Task</button>
+            <div id="branch-list"></div>
         </div>
     </div>
-<script>
+
+    <script>
         const taskForm = document.getElementById('task-form');
-const taskInput = document.getElementById('task-input');
-const taskList = document.getElementById('task-list');
+        const taskInput = document.getElementById('task-input');
+        const taskList = document.getElementById('task-list');
+        const clearTasksButton = document.getElementById('clear-tasks');
 
-const branchModal = document.getElementById('branch-modal');
-const branchForm = document.getElementById('branch-form');
-const subtaskInput = document.getElementById('subtask-input');
-const closeModal = document.querySelector('.close');
-const endTaskBtn = document.getElementById('end-task');
-const modalTitle = document.querySelector('.modal-content h2');
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
-let activeTask;
-let addingTopLevel = true;
-
-taskForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const taskText = taskInput.value.trim();
-    if (taskText.length > 0) {
-        addTask(taskText, taskList);
-        taskInput.value = '';
-    }
-});
-
-branchForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const subtaskText = subtaskInput.value.trim();
-    if (subtaskText.length > 0) {
-        if (addingTopLevel) {
-            addTask(subtaskText, taskList);
-        } else {
-            addTask(subtaskText, activeTask.subtasksContainer);
+        function updateLocalStorage() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
         }
-        subtaskInput.value = '';
-    }
-});
 
-closeModal.addEventListener('click', () => {
-    branchModal.style.display = 'none';
-    addingTopLevel = true;
-});
+        function renderTasks() {
+            taskList.innerHTML = '';
 
-endTaskBtn.addEventListener('click', () => {
-    closeModal.click();
-});
+            tasks.forEach((task, taskIndex) => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task';
+                taskElement.innerHTML = `
+                    <p class="task-title">${task.title}</p>
+                    <div class="subtasks"></div>
+                    <button class="add-branch-btn" data-task-index="${taskIndex}">Add Subtask</button>
+                `;
 
-document.addEventListener('DOMContentLoaded', () => {
-    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-    if (savedTasks) {
-        for (const taskData of savedTasks) {
-            const task = addTask(taskData.task || taskData, taskList);
-            if (taskData.subtasks) {
-                loadSubtasks(task, taskData.subtasks);
-            }
+                const subtasksContainer = taskElement.querySelector('.subtasks');
+                task.subtasks.forEach((subtask, subtaskIndex) => {
+                    const subtaskElement = document.createElement('p');
+                    subtaskElement.innerText = subtask.title;
+                    subtaskElement.className = subtask.completed ? 'completed' : '';
+                    subtaskElement.addEventListener('click', () => {
+                        tasks[taskIndex].subtasks[subtaskIndex].completed = !tasks[taskIndex].subtasks[subtaskIndex].completed;
+                        updateLocalStorage();
+                        renderTasks();
+                    });
+
+                    subtasksContainer.appendChild(subtaskElement);
+                });
+
+                taskElement.querySelector('.add-branch-btn').addEventListener('click', () => {
+                    openModal(taskIndex);
+                });
+
+                taskList.appendChild(taskElement);
+            });
         }
-    }
-});
 
-function addTask(taskText, container) {
-    const task = document.createElement('div');
-    task.classList.add('task', 'not-started');
-                task.style.minHeight = 'auto';
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-    const taskTitle = document.createElement('p');
-    taskTitle.textContent = taskText;
-    taskTitle.classList.add('task-title');
-    task.appendChild(taskTitle);
+            const taskTitle = taskInput.value.trim();
+            if (taskTitle === '') return;
 
-    const statusGroup = document.createElement('div');
-    const notStartedRadio = createRadioButton('status', 'Not Started', true, task, taskTitle);
-    const inProgressRadio = createRadioButton('status', 'In Progress', false, task, taskTitle);
-    const completedRadio = createRadioButton('status', 'Completed', false, task, taskTitle);
+            tasks.push({
+                title: taskTitle,
+                subtasks: []
+            });
 
-    statusGroup.appendChild(notStartedRadio);
-    statusGroup.appendChild(inProgressRadio);
-    statusGroup.appendChild(completedRadio);
+            updateLocalStorage();
+            renderTasks();
 
-    const addSubtaskBtn = document.createElement('button');
-    addSubtaskBtn.textContent = 'Add Subtask';
-    addSubtaskBtn.addEventListener('click', () => {
-        branchModal.style.display = 'block';
-        activeTask = task;
-        addingTopLevel = false;
-        modalTitle.textContent = 'Add a subtask';
+            taskInput.value = '';
+        });
+
+        clearTasksButton.addEventListener('click', () => {
+            tasks = [];
+            updateLocalStorage();
+            renderTasks();
+        });
+
+        const modal = document.getElementById('modal');
+        const branchForm = document.getElementById('branch-form');
+        const branchInput = document.getElementById('branch-input');
+        const branchList = document.getElementById('branch-list');
+        const closeBtn = document.querySelector('.close');
+        let currentTaskIndex = null;
+
+        function openModal(taskIndex) {
+            currentTaskIndex = taskIndex;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        closeBtn.onclick = function() {
+            closeModal();
+        }
+
+        window.onclick = function(event) 
+        {
+        if (event.target == modal) 
+        {   }
+
+    branchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const branchTitle = branchInput.value.trim();
+        if (branchTitle === '') return;
+
+        tasks[currentTaskIndex].subtasks.push({
+            title: branchTitle,
+            completed: false
+        });
+
+        updateLocalStorage();
+        renderTasks();
+
+        branchInput.value = '';
+        closeModal();
     });
 
-    const subtasksContainer = document.createElement('div');
-    subtasksContainer.classList.add('subtasks');
-    task.subtasksContainer = subtasksContainer;
-
-    task.appendChild(statusGroup);
-    task.appendChild(addSubtaskBtn);
-    task.appendChild(subtasksContainer);
-    container.appendChild(task);
-    updateLocalStorage();
-    return task;
-}
-
-function loadSubtasks(task, subtasksData) {
-    for (const subtaskData of subtasksData) {
-        const subtask = addTask(subtaskData.task || subtaskData, task.subtasksContainer);
-        if (subtaskData.subtasks) {
-            loadSubtasks(subtask, subtaskData.subtasks);
-        }
-    }
-}
-
-function updateLocalStorage() {
-    const tasks = document.querySelectorAll('.task-title');
-    const taskDataList = Array.from(tasks).map(task => {
-        const subtasks = task.parentElement.subtasksContainer.querySelectorAll('.task-title');
-        return {
-            task: task.textContent,
-            subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => subtask.textContent) : null
-        };
-    });
-    localStorage.setItem('tasks', JSON.stringify(taskDataList));
-}
-
-function createRadioButton(name, labelText, checked, task, taskTitle) {
-    const label = document.createElement('label');
-    label.textContent = labelText;
-
-    const radio = document.createElement('input');
-    radio.type = 'radio';
-    radio.name = name;
-    radio.checked = checked;
-    radio.addEventListener('change', () => {
-        task.classList.remove('not-started', 'in-progress', 'completed');
-        if (labelText === 'Not Started') {
-            task.classList.add('not-started');
-        } else if (labelText === 'In Progress') {
-            task.classList.add('in-progress');
-        } else if (labelText === 'Completed') {
-            task.classList.add('completed');
-            branchModal.style.display = 'block';
-            activeTask = task;
-            addingTopLevel = false;
-            modalTitle.textContent = 'Add a subtask';
-        }
-    });
-
-    label.insertBefore(radio, label.firstChild);
-    return label;
-}
-
-    </script>
-</body>
+    renderTasks();
+</script>
+    </body>
 </html>
-
-
