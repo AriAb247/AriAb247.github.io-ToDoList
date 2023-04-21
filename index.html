@@ -241,7 +241,10 @@ branchForm.addEventListener('submit', (event) => {
         subtaskInput.value = '';
         branchModal.style.display = 'none';
     }
+    closeModal.click(); // Add this line to close the modal after adding a subtask
 });
+
+
 
 closeModal.addEventListener('click', () => {
     branchModal.style.display = 'none';
@@ -358,12 +361,14 @@ function getTaskData(task, isTopLevel) {
     const subtasks = task.subtasksContainer.querySelectorAll(isTopLevel ? '.task' : '> .task');
     const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
 
+    const subtaskDataList = subtasks.length > 0 ? Array.from(subtasks).map(subtask => getTaskData(subtask, false)) : null;
     return {
         task: taskTitle.textContent,
         status: status,
-        subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => getTaskData(subtask, false)) : null
+        subtasks: subtaskDataList && subtaskDataList.length > 0 ? subtaskDataList : null
     };
 }
+
 </script>
 </body>
 </html>
