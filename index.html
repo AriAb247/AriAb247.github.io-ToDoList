@@ -192,20 +192,20 @@ border-radius: 4px;
         <!-- Tasks will be displayed here -->
     </div>
     <!-- Modal for branching -->
-<div id="branch-modal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Task completed!</h2>
-        <p>Do you want to create a subtask (branch) or end this task?</p>
-        <form id="branch-form">
-            <input type="text" id="subtask-input" placeholder="Enter a subtask">
-            <button type="submit">Add Subtask</button>
-        </form>
-        <button id="end-task">End Task</button>
+ <div id="branch-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Task completed!</h2>
+            <p>Do you want to create a subtask (branch) or end this task?</p>
+            <form id="branch-form">
+                <input type="text" id="subtask-input" placeholder="Enter a subtask">
+                <button type="submit">Add Subtask</button>
+            </form>
+            <button id="end-task">End Task</button>
+        </div>
     </div>
-</div>
 <script>
-       const taskForm = document.getElementById('task-form');
+const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 const taskList = document.getElementById('task-list');
 const clearTasksBtn = document.getElementById('clear-tasks');
@@ -244,115 +244,118 @@ branchForm.addEventListener('submit', (event) => {
 });
 
 closeModal.addEventListener('click', () => {
-branchModal.style.display = 'none';
-addingTopLevel = true;
+    branchModal.style.display = 'none';
+    addingTopLevel = true;
 });
 
 endTaskBtn.addEventListener('click', () => {
-closeModal.click();
+    closeModal.click();
 });
 
 clearTasksBtn.addEventListener('click', () => {
-taskList.innerHTML = '';
-updateLocalStorage();
+    taskList.innerHTML = '';
+    updateLocalStorage();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-if (savedTasks) {
-for (const taskData of savedTasks) {
-const task = addTask(taskData.task || taskData, taskList);
-if (taskData.subtasks) {
-loadSubtasks(task, taskData.subtasks);
-}
-}
-}
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if (savedTasks) {
+        for (const taskData of savedTasks) {
+            const task = addTask(taskData.task || taskData, taskList);
+            if (taskData.subtasks) {
+                loadSubtasks(task, taskData.subtasks);
+            }
+        }
+    }
 });
 
 function addTask(taskText, container) {
-const task = document.createElement('div');
-task.classList.add('task', 'not-started');
+    const task = document.createElement('div');
+    task.classList.add('task', 'not-started');
     task.style.minHeight = 'auto';
 
-const taskTitle = document.createElement('p');
-taskTitle.textContent = taskText;
-taskTitle.classList.add('task-title');
-task.appendChild(taskTitle);
+    const taskTitle = document.createElement('p');
+    taskTitle.textContent = taskText;
+    taskTitle.classList.add('task-title');
+    task.appendChild(taskTitle);
 
-const statusGroup = document.createElement('div');
-const notStartedRadio = createRadioButton('status', 'Not Started', true, task, taskTitle);
-const inProgressRadio = createRadioButton('status', 'In Progress', false, task, taskTitle);
-const completedRadio = createRadioButton('status', 'Completed', false, task, taskTitle);
+    const statusGroup = document.createElement('div');
+    const notStartedRadio = createRadioButton('status', 'Not Started', true, task, taskTitle);
+    const inProgressRadio = createRadioButton('status', 'In Progress', false, task, taskTitle);
+    const completedRadio = createRadioButton('status', 'Completed', false, task, taskTitle);
 
-statusGroup.appendChild(notStartedRadio);
-statusGroup.appendChild(inProgressRadio);
-statusGroup.appendChild(completedRadio);
+    statusGroup.appendChild(notStartedRadio);
+    statusGroup.appendChild(inProgressRadio);
+    statusGroup.appendChild(completedRadio);
 
-const addSubtaskBtn = document.createElement('button');
-addSubtaskBtn.textContent = 'Add Subtask';
-addSubtaskBtn.addEventListener('click', () => {
-    branchModal.style.display = 'block';
-    activeTask = task;
-    addingTopLevel = false;
-    modalTitle.textContent = 'Add a subtask';
-});
+    const addSubtaskBtn = document.createElement('button');
+    addSubtaskBtn.textContent = 'Add Subtask';
+    addSubtaskBtn.addEventListener('click', () => {
+        branchModal.style.display = 'block';
+        activeTask = task;
+        addingTopLevel = false;
+        modalTitle.textContent = 'Add a subtask';
+    });
 
-const subtasksContainer = document.createElement('div');
-subtasksContainer.classList.add('subtasks');
-task.subtasksContainer = subtasksContainer;
+    const subtasksContainer = document.createElement('div');
+    subtasksContainer.classList.add('subtasks');
+    task.subtasksContainer = subtasksContainer;
 
-task.appendChild(statusGroup);
-task.appendChild(addSubtaskBtn);
-task.appendChild(subtasksContainer);
-container.appendChild(task);
-updateLocalStorage();
-return task;
+    task.appendChild(statusGroup);
+    task.appendChild(addSubtaskBtn);
+    task.appendChild(subtasksContainer);
+    container.appendChild(task);
+    updateLocalStorage();
+    return task;
 }
 
 function loadSubtasks(task, subtasksData) {
-for (const subtaskData of subtasksData) {
-const subtask = addTask(subtaskData.task || subtaskData, task.subtasksContainer);
-if (subtaskData.subtasks) {
-loadSubtasks(subtask, subtaskData.subtasks);
-}
-}
+    for (const subtaskData of subtasksData) {
+        const subtask = addTask(subtaskData.task || subtaskData, task.subtasksContainer);
+        if (subtaskData.subtasks) {
+            loadSubtasks(subtask, subtaskData.subtasks);
+        }
+    }
 }
 
 function updateLocalStorage() {
-const tasks = document.querySelectorAll('.task-title');
-const taskDataList = Array.from(tasks).map(task => {
-const subtasks = task.parentElement.subtasksContainer.querySelectorAll('.task-title');
-return {
-task: task.textContent,
-subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => subtask.textContent) : null
-};
-});
-localStorage.setItem('tasks', JSON.stringify(taskDataList));
+    const tasks = document.querySelectorAll('.task-title');
+    const taskDataList = Array.from(tasks).map(task => {
+        const subtasks = task.parentElement.subtasksContainer.querySelectorAll('.task-title');
+        return {
+            task: task.textContent,
+            subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => subtask.textContent) : null
+        };
+    });
+    localStorage.setItem('tasks', JSON.stringify(taskDataList));
 }
 
 function createRadioButton(name, labelText, checked, task, taskTitle) {
-const label = document.createElement('label');
-label.textContent = labelText;
+    const label = document.createElement('label');
+    label.textContent = labelText;
     const radio = document.createElement('input');
-radio.type = 'radio';
-radio.name = name;
-radio.checked = checked;
-radio.addEventListener('change', () => {
-    task.classList.remove('not-started', 'in-progress', 'completed');
-    if (labelText === 'Not Started') {
-        task.classList.add('not-started');
-    } else if (labelText === 'In Progress') {
-        task.classList.add('in-progress');
-    } else if (labelText === 'Completed') {
-        task.classList.add('completed');
-        branchModal.styledisplay = 'block';
-activeTask = task;
-addingTopLevel = false;
-modalTitle.textContent = 'Task completed!';
-});
+    radio.type = 'radio';
+    radio.name = name;
+    radio.checked = checked;
+    radio.addEventListener('change', () => {
+        task.classList.remove('not-started', 'in-progress', 'completed');
+        if (labelText === 'Not Started') {
+            task.classList.add('not-started');
+        } else if (labelText === 'In Progress') {
+            task.classList.add('in-progress');
+        } else if (labelText === 'Completed') {
+            task.classList.add('completed');
+            branchModal.style.display = 'block';
+            activeTask = task;
+            addingTopLevel = false;
+            modalTitle.textContent = 'Task completed!';
+        }
+    });
     label.insertBefore(radio, label.firstChild);
-return label;
+    return label;
 }
+
+
                        </script>
     </body>
 </html>
