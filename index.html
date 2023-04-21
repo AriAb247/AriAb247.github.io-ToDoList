@@ -347,31 +347,23 @@ function loadSubtasks(task, subtasksData) {
 
 function updateLocalStorage() {
     const tasks = document.querySelectorAll('#task-list > .task');
-    const taskDataList = Array.from(tasks).map(task => {
-        const taskTitle = task.querySelector('.task-title');
-        const subtasks = task.subtasksContainer.querySelectorAll('.task');
-        const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
+    const taskDataList = Array.from(tasks).map(task => getTaskData(task, true));
 
-        return {
-            task: taskTitle.textContent,
-            status: status,
-            subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => {
-                const subtaskTitle = subtask.querySelector('.task-title');
-                const nestedSubtasks = subtask.subtasksContainer.querySelectorAll('.task');
-                const subtaskStatus = subtask.classList.contains('not-started') ? 'Not Started' : (subtask.classList.contains('in-progress') ? 'In Progress' : 'Completed');
+    localStorage.setItem('tasks', JSON.stringify(taskDataList));
+}
 
-                return {
-                    task: subtaskTitle.textContent,
-                    status: subtaskStatus,
-                    subtasks: nestedSubtasks.length > 0 ? Array.from(nestedSubtasks).map(nestedSubtask => ({
-                        task: nestedSubtask.querySelector('.task-title').textContent,
-                        status: nestedSubtask.classList.contains('not-started') ? 'Not Started' : (nestedSubtask.classList.contains('in-progress') ? 'In Progress' : 'Completed'),
-                        subtasks: null
-                    })) : null
-                }
-            }) : null
-        };
-    });
+function getTaskData(task, isTopLevel) {
+    const taskTitle = task.querySelector('.task-title');
+    const subtasks = task.subtasksContainer.querySelectorAll(isTopLevel ? '.task' : '> .task');
+    const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
+
+    return {
+        task: taskTitle.textContent,
+        status: status,
+        subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => getTaskData(subtask, false)) : null
+    };
+}
+
 
     localStorage.setItem('tasks', JSON.stringify(taskDataList));
 }
