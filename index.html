@@ -239,11 +239,9 @@ branchForm.addEventListener('submit', (event) => {
             addTask(subtaskText, activeTask.subtasksContainer);
         }
         subtaskInput.value = '';
-        closeModal.click();
+        branchModal.style.display = 'none';
     }
-    branchModal.style.display = 'none';
 });
-
 
 closeModal.addEventListener('click', () => {
     branchModal.style.display = 'none';
