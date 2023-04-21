@@ -303,6 +303,7 @@ function addTask(taskText, container, status = 'Not Started') {
 
     task.appendChild(statusGroup);
     task.appendChild(addSubtaskBtn);
+    task.subtasksContainer = subtasksContainer;
     task.appendChild(subtasksContainer);
     container.appendChild(task);
 
