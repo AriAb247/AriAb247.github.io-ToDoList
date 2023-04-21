@@ -205,7 +205,7 @@ border-radius: 4px;
         </div>
     </div>
 <script>
-
+<script>
 const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 const taskList = document.getElementById('task-list');
@@ -272,16 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function addTask(taskText, container, status = 'Not Started') {
     const task = document.createElement('div');
-    task.classList.add('task');
+    task.classList.add('task', status.toLowerCase().replace(' ', '-'));
     task.style.minHeight = 'auto';
-
-    if (status === 'Not Started') {
-        task.classList.add('not-started');
-    } else if (status === 'In Progress') {
-        task.classList.add('in-progress');
-    } else if (status === 'Completed') {
-        task.classList.add('completed');
-    }
 
     const taskTitle = document.createElement('p');
     taskTitle.textContent = taskText;
@@ -289,9 +281,9 @@ function addTask(taskText, container, status = 'Not Started') {
     task.appendChild(taskTitle);
 
     const statusGroup = document.createElement('div');
-    const notStartedRadio = createRadioButton('status', 'Not Started', status === 'Not Started', task, taskTitle);
-    const inProgressRadio = createRadioButton('status', 'In Progress', status === 'In Progress', task, taskTitle);
-    const completedRadio = createRadioButton('status', 'Completed', status === 'Completed', task, taskTitle);
+    const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started');
+    const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress');
+    const completedRadio = createRadioButton(task, 'Completed', status === 'Completed');
 
     statusGroup.appendChild(notStartedRadio);
     statusGroup.appendChild(inProgressRadio);
@@ -307,71 +299,76 @@ function addTask(taskText, container, status = 'Not Started') {
     });
 
     const subtasksContainer = document.createElement('div');
-        subtasksContainer.classList.add('subtasks');
+    subtasksContainer.classList.add('subtasks');
     task.subtasksContainer = subtasksContainer;
 
     task.appendChild(statusGroup);
     task.appendChild(addSubtaskBtn);
     task.appendChild(subtasksContainer);
-
     container.appendChild(task);
 
     updateLocalStorage();
     return task;
 }
 
-function createRadioButton(name, value, checked, task, taskTitle) {
+function createRadioButton(task, value, checked) {
     const label = document.createElement('label');
-    label.textContent = value;
+label.textContent = value;
 
-    const radioButton = document.createElement('input');
-    radioButton.type = 'radio';
-    radioButton.name = name + taskTitle.textContent;
-    radioButton.value = value;
-    radioButton.checked = checked;
-    radioButton.addEventListener('change', () => {
-        task.className = 'task';
-        task.classList.add(value.toLowerCase().replace(' ', '-'));
-        updateLocalStorage();
-    });
+const radio = document.createElement('input');
+radio.type = 'radio';
+radio.name = value + task.textContent;
+radio.checked = checked;
 
-    label.insertBefore(radioButton, label.firstChild);
+radio.addEventListener('change', () => {
+    task.classList.remove('not-started', 'in-progress', 'completed');
+    task.classList.add(value.toLowerCase().replace(' ', '-'));
 
-    return label;
+    if (value === 'Completed') {
+        branchModal.style.display = 'block';
+        activeTask = task;
+        addingTopLevel = false;
+        modalTitle.textContent = 'Task completed!';
+    }
+    updateLocalStorage();
+});
+
+label.insertBefore(radio, label.firstChild);
+
+return label;
 }
 
 function loadSubtasks(task, subtasksData) {
-    for (const subtaskData of subtasksData) {
-        const subtask = addTask(subtaskData.task, task.subtasksContainer, subtaskData.status);
-        if (subtaskData.subtasks) {
-            loadSubtasks(subtask, subtaskData.subtasks);
-        }
+for (const subtaskData of subtasksData) {
+    const subtask = addTask(subtaskData.task, task.subtasksContainer, subtaskData.status);
+    if (subtaskData.subtasks) {
+        loadSubtasks(subtask, subtaskData.subtasks);
     }
+}
 }
 
 function updateLocalStorage() {
-    const topLevelTasks = taskList.querySelectorAll('.task');
-    const taskDataList = Array.from(topLevelTasks).map(task => saveTask(task));
-    localStorage.setItem('tasks', JSON.stringify(taskDataList));
-}
-
-function saveTask(task) {
+const tasks = document.querySelectorAll('#task-list > .task');
+const taskDataList = Array.from(tasks).map(task => {
     const taskTitle = task.querySelector('.task-title');
-    const subtasksContainer = task.subtasksContainer;
-    const subtasks = subtasksContainer.querySelectorAll('.task');
-    const status = task.classList.contains('not-started') ? 'Not Started' : task.classList.contains('in-progress') ? 'In Progress' : 'Completed';
+    const subtasks = task.subtasksContainer.querySelectorAll('.task');
+    const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
 
     return {
         task: taskTitle.textContent,
-        status,
-        subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => saveTask(subtask)) : null
+        status: status,
+        subtasks: subtasks.length > 0 ? Array.from(subtasks).map(subtask => ({
+            task: subtask.querySelector('.task-title').textContent,
+            status: subtask.classList.contains('not-started') ? 'Not Started' : (subtask.classList.contains('in-progress') ? 'In Progress' : 'Completed'),
+            subtasks: null
+        })) : null
     };
+});
+
+localStorage.setItem('tasks', JSON.stringify(taskDataList));
 }
 
-
-
-
-                       </script>
+</script>
     </body>
 </html>
 
