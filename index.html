@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const taskData of savedTasks) {
             const task = addTask(taskData.task, taskList, taskData.status);
             if (taskData.subtasks) {
-                loadSubtasks(task, taskData.subtasks);
+                loadSubtasks(task.subtasksContainer, taskData.subtasks);
             }
         }
     }
@@ -357,7 +357,7 @@ function updateLocalStorage() {
 
 function getTaskData(task, isTopLevel) {
     const taskTitle = task.querySelector('.task-title');
-    const subtasks = task.subtasksContainer.querySelectorAll(isTopLevel ? '.task' : '> .task');
+    const subtasks = task.subtasksContainer.children;
     const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
 
     const subtaskDataList = Array.from(subtasks).map(subtask => getTaskData(subtask, false));
