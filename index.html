@@ -257,17 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLocalStorage();
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-        if (savedTasks) {
-            for (const taskData of savedTasks) {
-                const task = addTask(taskData.task, taskList, taskData.status);
-                if (taskData.subtasks) {
-                    loadSubtasks(task, taskData.subtasks);
-                }
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if (savedTasks) {
+        for (const taskData of savedTasks) {
+            const task = addTask(taskData.task, taskList, taskData.status);
+            if (taskData.subtasks) {
+                loadSubtasks(task, taskData.subtasks);
             }
         }
-    });
+    }
 
     function addTask(taskText, container, status = 'Not Started') {
         const task = document.createElement('div');
