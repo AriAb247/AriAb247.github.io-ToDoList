@@ -62,25 +62,30 @@
         }
 
         .task {
-            display: inline-block;
-            padding: 15px;
-            margin: 5px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 3px rgba(0, 0, 0, 0.24);
-            width: 80%;
-            box-sizing: border-box;
-        }
+    display: inline-block;
+    padding: 15px;
+    margin: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 3px rgba(0, 0, 0, 0.24);
+    width: 80%;
+    box-sizing: border-box;
+    position: relative; /* Add this rule */
+}
 
-        .task p {
-            font-size: 18px;
-            margin: 0;
-            margin-bottom: 10px;
-        }
+.task p {
+    font-size: 18px;
+    margin: 0;
+    margin-bottom: 10px;
+}
 
-        .subtasks {
-            padding-left: 20px;
-            padding-top: 10px;
-        }
+.subtasks {
+    padding-left: 20px;
+    padding-top: 10px;
+    position: absolute; /* Add this rule */
+    left: 0; /* Add this rule */
+    top: 100%; /* Add this rule */
+    width: 100%; /* Add this rule */
+}
 
         .modal {
             display: none;
