@@ -352,22 +352,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateLocalStorage() {
         const tasks = document.querySelectorAll('#task-list > .task');
-        const taskDataList = Array.from(tasks).map(task => getTaskData(task));
+        const taskDataList = Array.from(tasks).map(task => getTaskData(task, true));
 
         localStorage.setItem('tasks', JSON.stringify(taskDataList));
     }
 
-    function getTaskData(task) {
+    function getTaskData(task, isTopLevel = false) {
         const taskTitle = task.querySelector('.task-title');
-        const subtasks = task.subtasksContainer.children;
+        const subtasks = task.subtasksContainer ? task.subtasksContainer.children : [];
         const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
 
         const subtaskDataList = Array.from(subtasks).map(subtask => getTaskData(subtask));
-        return {
+        const taskData = {
             task: taskTitle.textContent,
             status: status,
             subtasks: subtaskDataList.length > 0 ? subtaskDataList : null
         };
+
+        if (isTopLevel) {
+            taskData.topLevel = true;
+        }
+
+        return taskData;
     }
 });
 
