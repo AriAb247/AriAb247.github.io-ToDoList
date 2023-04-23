@@ -205,19 +205,6 @@ border-radius: 4px;
         </div>
     </div>
 <script>
-    
-    function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-    
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
@@ -279,21 +266,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-if (savedTasks) {
-    try {
+    if (savedTasks) {
         for (const taskData of savedTasks) {
             const task = addTask(taskData.task, taskList, taskData.status);
             if (taskData.subtasks) {
                 loadSubtasks(task, taskData.subtasks);
             }
         }
-    } catch (error) {
-        console.error("Error loading tasks:", error);
-        console.log("Saved tasks:", JSON.stringify(savedTasks, null, 2));
     }
-}
 
-  function addTask(taskText, container, status = 'Not Started') {
+    function addTask(taskText, container, status = 'Not Started') {
         const task = document.createElement('div');
         task.classList.add('task', status.toLowerCase().replace(' ', '-'));
         task.style.minHeight = 'auto';
@@ -304,10 +286,9 @@ if (savedTasks) {
         task.appendChild(taskTitle);
 
         const statusGroup = document.createElement('div');
-        const taskId = new Date().getTime();
-        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started', taskId);
-        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress', taskId);
-        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed', taskId);
+        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started');
+        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress');
+        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed');
         statusGroup.appendChild(notStartedRadio);
         statusGroup.appendChild(inProgressRadio);
         statusGroup.appendChild(completedRadio);
@@ -333,13 +314,13 @@ if (savedTasks) {
         return task;
     }
 
-    function createRadioButton(task, value, checked, taskId) {
+    function createRadioButton(task, value, checked) {
         const label = document.createElement('label');
         label.textContent = value;
 
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = value + taskId;
+        radio.name = value + task.textContent;
         radio.checked = checked;
 
         radio.addEventListener('change', () => {
@@ -370,12 +351,11 @@ if (savedTasks) {
     }
 
     function updateLocalStorage() {
-       const updateLocalStorage = debounce(() => {
-    const tasks = document.querySelectorAll('#task-list > .task');
-    const taskDataList = Array.from(tasks).map(task => getTaskData(task));
+        const tasks = document.querySelectorAll('#task-list > .task');
+        const taskDataList = Array.from(tasks).map(task => getTaskData(task));
 
-    localStorage.setItem('tasks', JSON.stringify(taskDataList));
-}, 100);
+        localStorage.setItem('tasks', JSON.stringify(taskDataList));
+    }
 
     function getTaskData(task) {
         const taskTitle = task.querySelector('.task-title');
