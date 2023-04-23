@@ -318,6 +318,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLocalStorage();
         return task;
     }
+    
+function loadTasks() {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if (savedTasks) {
+        loadSubtasks(taskList, savedTasks);
+    }
+}
 
     function createRadioButton(task, value, checked) {
         const label = document.createElement('label');
@@ -375,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 });
+    loadTasks();
 </script>
 
 
