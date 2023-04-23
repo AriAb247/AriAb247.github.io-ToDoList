@@ -253,11 +253,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     clearTasksBtn.addEventListener('click', () => {
-    taskList.innerHTML = '';
-    if (!isTaskListEmpty()) {
-        updateLocalStorage();
+        taskList.innerHTML = '';
+        if (!isTaskListEmpty()) {
+            updateLocalStorage();
+        } else {
+            localStorage.removeItem('tasks');
+        }
+    });
+
+    function isTaskListEmpty() {
+        return taskList.children.length === 0;
     }
-});
 
 function isTaskListEmpty() {
     return taskList.children.length === 0;
