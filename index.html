@@ -253,9 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     clearTasksBtn.addEventListener('click', () => {
-        taskList.innerHTML = '';
+    taskList.innerHTML = '';
+    if (!isTaskListEmpty()) {
         updateLocalStorage();
-    });
+    }
+});
+
+function isTaskListEmpty() {
+    return taskList.children.length === 0;
+}
 
     const savedTasks = JSON.parse(localStorage.getItem('tasks'));
     if (savedTasks) {
