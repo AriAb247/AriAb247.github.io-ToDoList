@@ -205,6 +205,19 @@ border-radius: 4px;
         </div>
     </div>
 <script>
+    
+    function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+    
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
@@ -357,11 +370,12 @@ if (savedTasks) {
     }
 
     function updateLocalStorage() {
-        const tasks = document.querySelectorAll('#task-list > .task');
-        const taskDataList = Array.from(tasks).map(task => getTaskData(task));
+       const updateLocalStorage = debounce(() => {
+    const tasks = document.querySelectorAll('#task-list > .task');
+    const taskDataList = Array.from(tasks).map(task => getTaskData(task));
 
-        localStorage.setItem('tasks', JSON.stringify(taskDataList));
-    }
+    localStorage.setItem('tasks', JSON.stringify(taskDataList));
+}, 100);
 
     function getTaskData(task) {
         const taskTitle = task.querySelector('.task-title');
