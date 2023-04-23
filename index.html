@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function addTask(taskText, container, status = 'Not Started') {
+  function addTask(taskText, container, status = 'Not Started') {
         const task = document.createElement('div');
         task.classList.add('task', status.toLowerCase().replace(' ', '-'));
         task.style.minHeight = 'auto';
@@ -286,9 +286,10 @@ document.addEventListener('DOMContentLoaded', () => {
         task.appendChild(taskTitle);
 
         const statusGroup = document.createElement('div');
-        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started');
-        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress');
-        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed');
+        const taskId = new Date().getTime();
+        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started', taskId);
+        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress', taskId);
+        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed', taskId);
         statusGroup.appendChild(notStartedRadio);
         statusGroup.appendChild(inProgressRadio);
         statusGroup.appendChild(completedRadio);
@@ -314,13 +315,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return task;
     }
 
-    function createRadioButton(task, value, checked) {
+    function createRadioButton(task, value, checked, taskId) {
         const label = document.createElement('label');
         label.textContent = value;
 
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = value + task.textContent;
+        radio.name = value + taskId;
         radio.checked = checked;
 
         radio.addEventListener('change', () => {
