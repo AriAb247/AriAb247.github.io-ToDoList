@@ -205,187 +205,172 @@ border-radius: 4px;
         </div>
     </div>
 <script>
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const taskForm = document.getElementById('task-form');
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+    const clearTasksBtn = document.getElementById('clear-tasks');
+    const branchModal = document.getElementById('branch-modal');
+    const branchForm = document.getElementById('branch-form');
+    const subtaskInput = document.getElementById('subtask-input');
+    const closeModal = document.querySelector('.close');
+    const endTaskBtn = document.getElementById('end-task');
+    const modalTitle = document.querySelector('.modal-content h2');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const taskForm = document.getElementById('task-form');
-        const taskInput = document.getElementById('task-input');
-        const taskList = document.getElementById('task-list');
-        const clearTasksBtn = document.getElementById('clear-tasks');
-        const branchModal = document.getElementById('branch-modal');
-        const branchForm = document.getElementById('branch-form');
-        const subtaskInput = document.getElementById('subtask-input');
-        const closeModal = document.querySelector('.close');
-        const endTaskBtn = document.getElementById('end-task');
-        const modalTitle = document.querySelector('.modal-content h2');
+    let activeTask;
+    let addingTopLevel = true;
 
-        let activeTask;
-        let addingTopLevel = true;
-
-        taskForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const taskText = taskInput.value.trim();
-            if (taskText.length > 0) {
-                addTask(taskText, taskList);
-                taskInput.value = '';
-            }
-        });
-
-        branchForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const subtaskText = subtaskInput.value.trim();
-            if (subtaskText.length > 0) {
-                if (addingTopLevel) {
-                    addTask(subtaskText, taskList);
-                } else {
-                    addTask(subtaskText, activeTask.subtasksContainer);
-                }
-                subtaskInput.value = '';
-                closeModal.click();
-            }
-        });
-
-        closeModal.addEventListener('click', () => {
-            branchModal.style.display = 'none';
-            addingTopLevel = true;
-        });
-
-        endTaskBtn.addEventListener('click', () => {
-            closeModal.click();
-        });
-
-        clearTasksBtn.addEventListener('click', () => {
-            taskList.innerHTML = '';
-            if (!isTaskListEmpty()) {
-                debouncedUpdateLocalStorage();
-            } else {
-                localStorage.removeItem('tasks');
-            }
-        });
-
-        function isTaskListEmpty() {
-            return taskList.children.length === 0;
-        }
-
-        const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-        if (savedTasks) {
-            for (const taskData of savedTasks) {
-                const task = addTask(taskData.task, taskList, taskData.status);
-                if (taskData.subtasks) {
-                    loadSubtasks(task, taskData.subtasks);
-                }
-            }
-        }
-
-        function addTask(taskText, container, status = 'Not Started') {
-            const task = document.createElement('div');
-            task.classList.add('task', status.toLowerCase().replace(' ', '-'));
-            task.style.minHeight = 'auto';
-
-            const taskTitle = document.createElement('p');
-            taskTitle.textContent = taskText;
-            taskTitle.classList.add('task-title');
-            task.appendChild(taskTitle);
-
-            const statusGroup = document.createElement('div');
-            const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started');
-            const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress');
-            const completedRadio = createRadioButton(task, 'Completed', status === 'Completed');
-            statusGroup.appendChild(notStartedRadio);
-            statusGroup.appendChild(inProgressRadio);
-            statusGroup.appendChild(completedRadio);
-
-            const addSubtaskBtn = document.createElement('button');
-            addSubtaskBtn.textContent = 'Add Subtask';
-            addSubtaskBtn.addEventListener('click', () => {
-                branchModal.style.display = 'block';
-                activeTask = task;
-                addingTopLevel = false;
-                modalTitle.textContent = 'Add a subtask';
-            });
-
-            const subtasksContainer = document.createElement('div');
-            subtasksContainer.classList.add('subtasks');
-            task.subtasksContainer = subtasksContainer;
-            task.appendChild(statusGroup);
-            task.appendChild(addSubtaskBtn);
-            task.appendChild(subtasksContainer);
-            container.appendChild(task);
-
-            debouncedUpdateLocalStorage();
-            return task;
-        }
-
-        function createRadioButton(task, value, checked) {
-            const label = document.createElement('label');
-            label.textContent = value;
-
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = value + task.textContent;
-            radio.checked = checked;
-
-            radio.addEventListener('change', () => {
-                task.classList.remove('not-started', 'in-progress', 'completed');
-                task.classList.add(value.toLowerCase().replace(' ', '-'));
-
-                if (value === 'Completed') {
-                    branchModal.style.display = 'block';
-                    activeTask = task;
-                    addingTopLevel = false;
-                    modalTitle.textContent = 'Task completed!';
-                }
-                debouncedUpdateLocalStorage();
-            });
-
-            label.insertBefore(radio, label.firstChild);
-
-            return label;
-        }
-
-        function loadSubtasks(container, subtasksData) {
-            for (const subtaskData of subtasksData) {
-                const subtask = addTask(subtaskData.task, container, subtaskData.status);
-                if (subtaskData.subtasks) {
-                    loadSubtasks(subtask.subtasksContainer, subtaskData.subtasks);
-                }
-            }
-        }
-
-        const debouncedUpdateLocalStorage = debounce(updateLocalStorage, 1000);
-
-        function updateLocalStorage() {
-            const tasks = document.querySelectorAll('#task-list > .task');
-            const taskDataList = Array.from(tasks).map(task => getTaskData(task));
-
-            localStorage.setItem('tasks', JSON.stringify(taskDataList));
-        }
-
-        function getTaskData(task) {
-            const taskTitle = task.querySelector('.task-title');
-            const subtasks = task.subtasksContainer.children;
-            const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
-
-            const subtaskDataList = Array.from(subtasks).map(subtask => getTaskData(subtask));
-            return {
-                task: taskTitle.textContent,
-                status: status,
-                subtasks: subtaskDataList.length > 0 ? subtaskDataList : null
-            };
+    taskForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const taskText = taskInput.value.trim();
+        if (taskText.length > 0) {
+            addTask(taskText, taskList);
+            taskInput.value = '';
         }
     });
 
-               
+    branchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const subtaskText = subtaskInput.value.trim();
+        if (subtaskText.length > 0) {
+            if (addingTopLevel) {
+                addTask(subtaskText, taskList);
+            } else {
+                addTask(subtaskText, activeTask.subtasksContainer);
+            }
+            subtaskInput.value = '';
+            closeModal.click();
+        }
+    });
+
+    closeModal.addEventListener('click', () => {
+        branchModal.style.display = 'none';
+        addingTopLevel = true;
+    });
+
+    endTaskBtn.addEventListener('click', () => {
+        closeModal.click();
+    });
+
+    clearTasksBtn.addEventListener('click', () => {
+        taskList.innerHTML = '';
+        if (!isTaskListEmpty()) {
+            updateLocalStorage();
+        } else {
+            localStorage.removeItem('tasks');
+        }
+    });
+
+    function isTaskListEmpty() {
+        return taskList.children.length === 0;
+    }
+
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if (savedTasks) {
+        for (const taskData of savedTasks) {
+            const task = addTask(taskData.task, taskList, taskData.status);
+            if (taskData.subtasks) {
+                loadSubtasks(task, taskData.subtasks);
+            }
+        }
+    }
+
+    function addTask(taskText, container, status = 'Not Started') {
+        const task = document.createElement('div');
+        task.classList.add('task', status.toLowerCase().replace(' ', '-'));
+        task.style.minHeight = 'auto';
+
+        const taskTitle = document.createElement('p');
+        taskTitle.textContent = taskText;
+        taskTitle.classList.add('task-title');
+        task.appendChild(taskTitle);
+
+        const statusGroup = document.createElement('div');
+        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started');
+        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress');
+        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed');
+        statusGroup.appendChild(notStartedRadio);
+        statusGroup.appendChild(inProgressRadio);
+        statusGroup.appendChild(completedRadio);
+
+        const addSubtaskBtn = document.createElement('button');
+        addSubtaskBtn.textContent = 'Add Subtask';
+        addSubtaskBtn.addEventListener('click', () => {
+            branchModal.style.display = 'block';
+            activeTask = task;
+            addingTopLevel = false;
+            modalTitle.textContent = 'Add a subtask';
+        });
+
+        const subtasksContainer = document.createElement('div');
+        subtasksContainer.classList.add('subtasks');
+        task.subtasksContainer = subtasksContainer;
+        task.appendChild(statusGroup);
+                task.appendChild(addSubtaskBtn);
+        task.appendChild(subtasksContainer);
+        container.appendChild(task);
+
+        updateLocalStorage();
+        return task;
+    }
+
+    function createRadioButton(task, value, checked) {
+        const label = document.createElement('label');
+        label.textContent = value;
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = value + task.textContent;
+        radio.checked = checked;
+
+        radio.addEventListener('change', () => {
+            task.classList.remove('not-started', 'in-progress', 'completed');
+            task.classList.add(value.toLowerCase().replace(' ', '-'));
+
+            if (value === 'Completed') {
+                branchModal.style.display = 'block';
+                activeTask = task;
+                addingTopLevel = false;
+                modalTitle.textContent = 'Task completed!';
+            }
+            updateLocalStorage();
+        });
+
+        label.insertBefore(radio, label.firstChild);
+
+        return label;
+    }
+
+    function loadSubtasks(container, subtasksData) {
+        for (const subtaskData of subtasksData) {
+            const subtask = addTask(subtaskData.task, container, subtaskData.status);
+            if (subtaskData.subtasks) {
+                loadSubtasks(subtask.subtasksContainer, subtaskData.subtasks);
+            }
+        }
+    }
+
+    function updateLocalStorage() {
+        const tasks = document.querySelectorAll('#task-list > .task');
+        const taskDataList = Array.from(tasks).map(task => getTaskData(task));
+
+        localStorage.setItem('tasks', JSON.stringify(taskDataList));
+    }
+
+    function getTaskData(task) {
+        const taskTitle = task.querySelector('.task-title');
+        const subtasks = task.subtasksContainer.children;
+        const status = task.classList.contains('not-started') ? 'Not Started' : (task.classList.contains('in-progress') ? 'In Progress' : 'Completed');
+
+        const subtaskDataList = Array.from(subtasks).map(subtask => getTaskData(subtask));
+        return {
+            task: taskTitle.textContent,
+            status: status,
+            subtasks: subtaskDataList.length > 0 ? subtaskDataList : null
+        };
+    }
+});
+
 
 </script>
 
@@ -394,4 +379,3 @@ border-radius: 4px;
 
 </body>
 </html>
-
