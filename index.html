@@ -266,14 +266,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-    if (savedTasks) {
+if (savedTasks) {
+    try {
         for (const taskData of savedTasks) {
             const task = addTask(taskData.task, taskList, taskData.status);
             if (taskData.subtasks) {
                 loadSubtasks(task, taskData.subtasks);
             }
         }
+    } catch (error) {
+        console.error("Error loading tasks:", error);
+        console.log("Saved tasks:", JSON.stringify(savedTasks, null, 2));
     }
+}
 
   function addTask(taskText, container, status = 'Not Started') {
         const task = document.createElement('div');
