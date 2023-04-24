@@ -351,11 +351,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateLocalStorage() {
-        const tasks = document.querySelectorAll('#task-list > .task');
-        const taskDataList = Array.from(tasks).map(task => getTaskData(task));
+    const tasks = document.querySelectorAll('#task-list > .task');
+    const taskDataList = Array.from(tasks).map(task => getTaskData(task));
 
+    if (taskDataList.length === 0) {
+        localStorage.removeItem('tasks');
+    } else {
         localStorage.setItem('tasks', JSON.stringify(taskDataList));
     }
+}
+
 
     function getTaskData(task) {
         const taskTitle = task.querySelector('.task-title');
