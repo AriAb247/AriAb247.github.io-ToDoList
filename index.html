@@ -5,165 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List App</title>
     <style>
-       body {
-    font-family: 'Arial', sans-serif;
-    background-color: #1c1c1c;
-    margin: 0;
-    padding: 0;
-    color: #e0e0e0;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #task-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #task-input {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 60%;
+        }
+
+        #task-form button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #task-form button:hover {
+            background-color: #283593;
+        }
+        
+        .task-title {
+            width: 60%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        #task-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .task {
+            display: inline-block;
+            padding: 15px;
+            margin: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 3px rgba(0, 0, 0, 0.24);
+            width: 80%;
+            box-sizing: border-box;
+        }
+
+        .task p {
+            font-size: 18px;
+            margin: 0;
+            margin-bottom: 10px;
+        }
+
+        .subtasks {
+            padding-left: 20px;
+            padding-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+
+        #task-form, #branch-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+border-radius: 4px;
 }
+            button:hover {
+        background-color: #45a049;
+    }
 
-h1 {
-    text-align: center;
-    background-color: #000;
-    color: #e0e0e0;
-    padding: 20px;
-    margin: 0;
-    border-bottom: 2px solid #3a3a3a;
-}
+    input[type="text"] {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+   .not-started {
+        background-color: #f8d7da;
+    }
 
-#task-form {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
+    .in-progress {
+        background-color: #ffeeba;
+    }
 
-#task-input {
-    padding: 5px;
-    font-size: 16px;
-    border: 1px solid #555;
-    border-radius: 4px;
-    width: 60%;
-    background-color: #333;
-    color: #e0e0e0;
-}
+    .completed {
+        background-color: #c3e6cb;
+    }
 
-#task-form button {
-    padding: 5px 10px;
-    font-size: 16px;
-    background-color: #434343;
-    color: #e0e0e0;
-    border: 1px solid #555;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 10px;
-}
+    label {
+        font-size: 14px;
+        margin-right: 10px;
+    }
 
-#task-form button:hover {
-    background-color: #3a3a3a;
-}
+    button {
+        padding: 5px 10px;
+        font-size: 14px;
+        background-color: #3f51b5;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
 
-.task-title {
-    width: 60%;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-}
-
-#task-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.task {
-    display: inline-block;
-    padding: 15px;
-    margin: 5px;
-    border-radius: 5px;
-    background-color: #2e2e2e;
-    width: 80%;
-    box-sizing: border-box;
-    border: 1px solid #555;
-}
-
-.task p {
-    font-size: 18px;
-    margin: 0;
-    margin-bottom: 10px;
-}
-
-.subtasks {
-    padding-left: 20px;
-    padding-top: 10px;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background-color: #2e2e2e;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #555;
-    width: 80%;
-    color: #e0e0e0;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #e0e0e0;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.not-started {
-    background-color: #f8d7da;
-}
-
-.in-progress {
-    background-color: #ffeeba;
-}
-
-.completed {
-    background-color: #c3e6cb;
-}
-
-label {
-    font-size: 14px;
-    margin-right: 10px;
-}
-
-button {
-    padding: 5px 10px;
-    font-size: 14px;
-    background-color: #434343;
-    color: #e0e0e0;
-    border: 1px solid #555;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-button:hover {
-    background-color: #3a3a3a;
-}
-
-input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-input[type="checkbox"]:checked + label {
-    text-decoration: line-through;
-    color: #999;
-}
-
-
+    button:hover {
+        background-color: #283593;
+    }
 </style>
 </head>
 <body>
@@ -190,7 +204,6 @@ input[type="checkbox"]:checked + label {
             <button id="end-task">End Task</button>
         </div>
     </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
@@ -252,19 +265,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return taskList.children.length === 0;
     }
 
-    function loadTasksFromLocalStorage() {
-        const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-        if (savedTasks) {
-            for (const taskData of savedTasks) {
-                const task = addTask(taskData.task, taskList, taskData.status);
-                if (taskData.subtasks) {
-                    loadSubtasks(task, taskData.subtasks);
-                }
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    if (savedTasks) {
+        for (const taskData of savedTasks) {
+            const task = addTask(taskData.task, taskList, taskData.status);
+            if (taskData.subtasks) {
+                loadSubtasks(task, taskData.subtasks);
             }
         }
     }
-
-    loadTasksFromLocalStorage();
 
     function addTask(taskText, container, status = 'Not Started') {
         const task = document.createElement('div');
@@ -294,23 +303,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const subtasksContainer = document.createElement('div');
-                subtasksContainer.classList.add('subtasks');
+        subtasksContainer.classList.add('subtasks');
         task.subtasksContainer = subtasksContainer;
         task.appendChild(statusGroup);
-        task.appendChild(addSubtaskBtn);
+                task.appendChild(addSubtaskBtn);
         task.appendChild(subtasksContainer);
         container.appendChild(task);
 
         updateLocalStorage();
         return task;
     }
-    
-function loadTasks() {
-    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-    if (savedTasks) {
-        loadSubtasks(taskList, savedTasks);
-    }
-}
 
     function createRadioButton(task, value, checked) {
         const label = document.createElement('label');
@@ -368,12 +370,13 @@ function loadTasks() {
         };
     }
 });
-    loadTasks();
-</script>
 
+
+</script>
 
 
 
 
 </body>
 </html>
+
