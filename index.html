@@ -374,6 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
             subtasks: subtaskDataList.length > 0 ? subtaskDataList : null
         };
     }
+
+    window.addEventListener('beforeunload', () => {
+        updateLocalStorage();
+    });
 });
 
 
