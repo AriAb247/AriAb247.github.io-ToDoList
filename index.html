@@ -204,7 +204,7 @@ border-radius: 4px;
             <button id="end-task">End Task</button>
         </div>
     </div>
-<script>
+    <script>
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
@@ -254,11 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearTasksBtn.addEventListener('click', () => {
         taskList.innerHTML = '';
-        if (!isTaskListEmpty()) {
-            updateLocalStorage();
-        } else {
-            localStorage.removeItem('tasks');
-        }
+        localStorage.removeItem('tasks');
     });
 
     function isTaskListEmpty() {
@@ -268,15 +264,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTasks = JSON.parse(localStorage.getItem('tasks'));
     if (savedTasks) {
         for (const taskData of savedTasks) {
-            const task = addTask(taskData.task, taskList, taskData.status, taskData.id);
+            const task = addTask(taskData.task, taskList, taskData.status);
             if (taskData.subtasks) {
                 loadSubtasks(task, taskData.subtasks);
             }
         }
     }
 
-    function addTask(taskText, container, status = 'Not Started', id = null) {
-        const taskId = id ? id : Date.now();
+    function addTask(taskText, container, status = 'Not Started') {
+        const taskId = Date.now().toString();
 
         const task = document.createElement('div');
         task.classList.add('task', status.toLowerCase().replace(' ', '-'));
@@ -288,9 +284,9 @@ document.addEventListener('DOMContentLoaded', () => {
         task.appendChild(taskTitle);
 
         const statusGroup = document.createElement('div');
-        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started', taskId);
-        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress', taskId);
-        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed', taskId);
+        const notStartedRadio = createRadioButton(task, 'Not Started', status === 'Not Started');
+        const inProgressRadio = createRadioButton(task, 'In Progress', status === 'In Progress');
+        const completedRadio = createRadioButton(task, 'Completed', status === 'Completed');
         statusGroup.appendChild(notStartedRadio);
         statusGroup.appendChild(inProgressRadio);
         statusGroup.appendChild(completedRadio);
@@ -304,27 +300,27 @@ document.addEventListener('DOMContentLoaded', () => {
             modalTitle.textContent = 'Add a subtask';
         });
 
-                const subtasksContainer = document.createElement('div');
+        const subtasksContainer = document.createElement('div');
         subtasksContainer.classList.add('subtasks');
         task.appendChild(statusGroup);
         task.appendChild(addSubtaskBtn);
         task.appendChild(subtasksContainer);
         container.appendChild(task);
-
-        task.subtasksContainer = subtasksContainer;
+        
+                task.subtasksContainer = subtasksContainer;
         task.id = taskId;
 
         updateLocalStorage();
         return task;
     }
 
-    function createRadioButton(task, value, checked, taskId) {
+    function createRadioButton(task, value, checked) {
         const label = document.createElement('label');
         label.textContent = value;
 
         const radio = document.createElement('input');
         radio.type = 'radio';
-        radio.name = value + taskId;
+        radio.name = value + task.textContent;
         radio.checked = checked;
 
         radio.addEventListener('change', () => {
@@ -347,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadSubtasks(container, subtasksData) {
         for (const subtaskData of subtasksData) {
-            const subtask = addTask(subtaskData.task, container, subtaskData.status, subtaskData.id);
+            const subtask = addTask(subtaskData.task, container, subtaskData.status);
             if (subtaskData.subtasks) {
                 loadSubtasks(subtask.subtasksContainer, subtaskData.subtasks);
             }
@@ -372,10 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const subtaskDataList = Array.from(subtasks).map(subtask => getTaskData(subtask));
         return {
+            id: task.id,
             task: taskTitle.textContent,
             status: status,
-            subtasks: subtaskDataList.length > 0 ? subtaskDataList : null,
-            id: task.id
+            subtasks: subtaskDataList.length > 0 ? subtaskDataList : null
         };
     }
 
@@ -383,13 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLocalStorage();
     });
 });
-</script>
 
-
-
-
-
-
+        </script>
 
 </body>
 </html>
