@@ -312,32 +312,40 @@ document.addEventListener('DOMContentLoaded', () => {
         return task;
     }
 
-    function createRadioButton(task, value, checked) {
-        const label = document.createElement('label');
-        label.textContent = value;
+    function createStatusCheckbox(task, value, checked) {
+                const label = document.createElement('label');
+                label.textContent = value;
 
-        const radio = document.createElement('input');
-        radio.type = 'radio';
-        radio.name = value + task.textContent;
-        radio.checked = checked;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = value + task.textContent;
+                checkbox.checked = checked;
 
-        radio.addEventListener('change', () => {
-            task.classList.remove('not-started', 'in-progress', 'completed');
-            task.classList.add(value.toLowerCase().replace(' ', '-'));
+                checkbox.addEventListener('change', () => {
+                    const otherCheckboxes = Array.from(label.parentNode.querySelectorAll('input[type=checkbox]'))
+                        .filter(c => c !== checkbox);
 
-            if (value === 'Completed') {
-                branchModal.style.display = 'block';
-                activeTask = task;
-                addingTopLevel = false;
-                modalTitle.textContent = 'Task completed!';
+                    task.classList.remove('not-started', 'in-progress', 'completed');
+                    if (checkbox.checked) {
+                        task.classList.add(value.toLowerCase().replace(' ', '-'));
+                        otherCheckboxes.forEach(c => c.checked = false);
+                    } else {
+                        task.classList.add('not-started');
+                    }
+
+                    if (value === 'Completed' && checkbox.checked) {
+                        branchModal.style.display = 'block';
+                        activeTask = task;
+                        addingTopLevel = false;
+                        modalTitle.textContent = 'Task completed!';
+                    }
+                    updateLocalStorage();
+                });
+
+                label.insertBefore(checkbox, label.firstChild);
+
+                return label;
             }
-            updateLocalStorage();
-        });
-
-        label.insertBefore(radio, label.firstChild);
-
-        return label;
-    }
 
     function loadSubtasks(parentTask, subtasksData) {
     for (const subtaskData of subtasksData) {
