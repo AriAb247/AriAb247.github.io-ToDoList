@@ -339,14 +339,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return label;
     }
 
-    function loadSubtasks(container, subtasksData) {
-        for (const subtaskData of subtasksData) {
-            const subtask = addTask(subtaskData.task, container, subtaskData.status, subtaskData.id);
-            if (subtaskData.subtasks) {
-                loadSubtasks(subtask.subtasksContainer, subtaskData.subtasks);
-            }
+    function loadSubtasks(parentTask, subtasksData) {
+    for (const subtaskData of subtasksData) {
+        const subtask = addTask(subtaskData.task, parentTask.subtasksContainer, subtaskData.status);
+        if (subtaskData.subtasks) {
+            loadSubtasks(subtask, subtaskData.subtasks);
         }
     }
+}
 
     function updateLocalStorage() {
         const topLevelTasks = document.querySelectorAll('#task-list > .task');
