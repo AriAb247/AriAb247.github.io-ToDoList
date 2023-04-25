@@ -204,7 +204,7 @@ border-radius: 4px;
             <button id="end-task">End Task</button>
         </div>
     </div>
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
@@ -257,26 +257,24 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('tasks');
     });
 
-    function isTaskListEmpty() {
-        return taskList.children.length === 0;
-    }
-
     const savedTasks = JSON.parse(localStorage.getItem('tasks'));
     if (savedTasks) {
         for (const taskData of savedTasks) {
-            const task = addTask(taskData.task, taskList, taskData.status);
+            const task = addTask(taskData.task, taskList, taskData.status, taskData.id);
             if (taskData.subtasks) {
                 loadSubtasks(task, taskData.subtasks);
             }
         }
     }
 
-    function addTask(taskText, container, status = 'Not Started') {
-        const taskId = Date.now().toString();
-
+    function addTask(taskText, container, status = 'Not Started', taskId = null) {
         const task = document.createElement('div');
         task.classList.add('task', status.toLowerCase().replace(' ', '-'));
         task.style.minHeight = 'auto';
+
+        if (!taskId) {
+            taskId = Date.now().toString();
+        }
 
         const taskTitle = document.createElement('p');
         taskTitle.textContent = taskText;
@@ -306,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         task.appendChild(addSubtaskBtn);
         task.appendChild(subtasksContainer);
         container.appendChild(task);
-        
+
                 task.subtasksContainer = subtasksContainer;
         task.id = taskId;
 
@@ -343,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadSubtasks(container, subtasksData) {
         for (const subtaskData of subtasksData) {
-            const subtask = addTask(subtaskData.task, container, subtaskData.status);
+            const subtask = addTask(subtaskData.task, container, subtaskData.status, subtaskData.id);
             if (subtaskData.subtasks) {
                 loadSubtasks(subtask.subtasksContainer, subtaskData.subtasks);
             }
@@ -379,8 +377,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLocalStorage();
     });
 });
+</script>
 
-        </script>
+
 
 </body>
 </html>
